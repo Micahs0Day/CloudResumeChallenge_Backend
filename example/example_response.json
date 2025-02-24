@@ -1,0 +1,28 @@
+{
+    "Items": [
+        {
+            "visitor_count_id": {
+                "N": "1"
+            },
+            "visitor_count": {
+                "N": "67"
+            }
+        }
+    ],
+    "Count": 1,
+    "ScannedCount": 1,
+    "ResponseMetadata": {
+        "RequestId": "23HCIQVLTB3ALMGFLERFETKSRVV4KPLVC5AEMVJF66Q9ASUFFXZ",
+        "HTTPStatusCode": 200,
+        "HTTPHeaders": {
+            "server": "Server",
+            "date": "Mon, 24 Feb 2025 15:33:09 GMT",
+            "content-type": "application/x-amz-json-1.0",
+            "content-length": "96",
+            "connection": "keep-alive",
+            "x-amzn-requestid": "23HCIQVLTB3ALMGFLERFETKSRVV4KPLVC5AEMVJF66Q9ASUFFXZ",
+            "x-amz-crc32": "1234540411"
+        },
+        "RetryAttempts": 0
+    }
+}
