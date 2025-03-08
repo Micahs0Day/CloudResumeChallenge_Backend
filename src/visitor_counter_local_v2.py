@@ -7,6 +7,9 @@ from dotenv import load_dotenv
 load_dotenv()
 ACCESS_KEY = os.getenv("ACCESS_KEY")
 SECRET_KEY = os.getenv("SECRET_KEY")
+TABLE_NAME = os.getenv("TABLE_NAME")
+
+# Create dynamodb table
 client = boto3.client("dynamodb", region_name='us-east-1', aws_access_key_id=ACCESS_KEY, aws_secret_access_key=SECRET_KEY)
 
 # The Lambda function handler is the method in your Python code that processes events. When your function is invoked, Lambda runs the handler method.
@@ -14,24 +17,47 @@ def lambda_handler(event, context):
     return Get_Visitor_Count()
 
 # Get current count from table, increment count by one, then output the updated count return the updated count JSON for Javascript to read.
-def Get_Visitor_Count():
+def Get_Visitor_Count(table_name_input):
 
     # The Scan operation returns one or more items and item attributes by accessing every item in a table or a secondary index.
     # You can also use the you can provide a FilterExpression operation to limit results.
-    response = client.scan(TableName="VisitorCountTable_TEST")
-
-    # See example_response in /examples dir
-    if "Items" in response:
-        count = response["Items"][0]["visitor_count"]["N"]
-        # Convert string to int for increment operation
-        count = int(count)
-        # Increment count by 1
-        count += 1
-
+    try:
+        response = client.scan(TableName=table_name_input)
+        # See example_response in /examples dir
+        if "Items" in response:
+            count = response["Items"][0]["visitor_count"]["N"]
+            # Convert string to int for increment operation
+            count = int(count)
+            # Increment count by 1
+            count += 1
+    # Error handling for being passed an empty table (sets count to 0, then later creates a new item in the table (update_item()))
+    except IndexError:
+        count = 0
+    # Error handling for being passed a non-existent table (creates a new table with the name of the passed non-existent table)
+    except client.exceptions.ResourceNotFoundException:
+        client.create_table(
+            AttributeDefinitions=[
+                {
+                    'AttributeName': 'visitor_count_id',
+                    'AttributeType': 'N',
+                }
+            ],
+            KeySchema=[
+                {
+                    'AttributeName': 'visitor_count_id',
+                    'KeyType': 'HASH',
+                }
+            ],
+            ProvisionedThroughput={
+                'ReadCapacityUnits': 5,
+                'WriteCapacityUnits': 5,
+            },
+            TableName=table_name_input,
+        )
+        count = 0
     # An attribute is a data element that describes a particular item in a table!
-
     # update_item() = Edits an existing item’s attributes, or adds a new item to the table if it does not already exist.
-    request = client.update_item(
+    client.update_item(
         # Unique identifier of the record.
         Key={
             "visitor_count_id": {
@@ -53,7 +79,7 @@ def Get_Visitor_Count():
         },
         # ALL_NEW = Returns all of the attributes of the item, as they appear after the UpdateItem operation.
         ReturnValues="ALL_NEW",
-        TableName="VisitorCountTable",
+        TableName=table_name_input,
         # An expression that defines one or more attributes to be updated, the action to be performed on them, and new values for them.
         # SET - Adds one or more attributes and values to an item. If any of these attributes already exist, they are replaced by the new values.
         UpdateExpression="SET #VC = :count",
@@ -65,5 +91,6 @@ def Get_Visitor_Count():
         'body': json.dumps({'visitorcount': count})
     }
 
-
-print(Get_Visitor_Count())
+# Used to execute this script only if the file is ran directly, and not at import.
+if __name__ == "__main__":
+    Get_Visitor_Count()
