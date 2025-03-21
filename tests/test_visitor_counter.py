@@ -3,7 +3,7 @@ from moto import mock_aws
 import sys, os
 
 
-# Set path for src import
+# Set path for local package import
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
