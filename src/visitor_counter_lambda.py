@@ -36,8 +36,6 @@ def Get_Visitor_Count(table_name):
         },
         ReturnValues="ALL_NEW",
         TableName="VisitorCountTable",
-        # An expression that defines one or more attributes to be updated, the action to be performed on them, and new values for them.
-        # SET - Adds one or more attributes and values to an item. If any of these attributes already exist, they are replaced by the new values.
         UpdateExpression="SET #VC = :count",
     )
 
