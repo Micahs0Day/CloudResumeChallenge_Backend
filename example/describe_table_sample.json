@@ -1,0 +1,47 @@
+{
+    "Table": {
+        "AttributeDefinitions": [
+            {
+                "AttributeName": "visitor_count_id",
+                "AttributeType": "B"
+            }
+        ],
+        "TableName": "test_invalid_schema_table",
+        "KeySchema": [
+            {
+                "AttributeName": "visitor_count_id",
+                "KeyType": "HASH"
+            }
+        ],
+        "TableStatus": "ACTIVE",
+        "CreationDateTime": "datetime.datetime(2025, 3, 17, 19, 39, 22, 691000, tzinfo=tzlocal())",
+        "ProvisionedThroughput": {
+            "NumberOfDecreasesToday": 0,
+            "ReadCapacityUnits": 0,
+            "WriteCapacityUnits": 0
+        },
+        "TableSizeBytes": 0,
+        "ItemCount": 0,
+        "TableArn": "arn:aws:dynamodb:us-east-1: 087082156078:table/test_invalid_schema_table",
+        "TableId": "b5c67e3f-35e2-4f69-8381-70eaea47f5cf",
+        "BillingModeSummary": {
+            "BillingMode": "PAY_PER_REQUEST",
+            "LastUpdateToPayPerRequestDateTime": "datetime.datetime(2025, 3, 17, 19, 39, 22, 691000, tzinfo=tzlocal())"
+        },
+        "DeletionProtectionEnabled": "False",
+        "WarmThroughput": {
+            "ReadUnitsPerSecond": 12000,
+            "WriteUnitsPerSecond": 4000,
+            "Status": "ACTIVE"
+        }
+    },
+    "ResponseMetadata": {
+        "RequestId": "P4SM36B6QM6J4P2JD12VGA3JEJVV4KQNSO5AEMVJF66Q9ASUAAJG",
+        "HTTPStatusCode": 200,
+        "HTTPHeaders": {
+            "server": "Server",
+            "date": "Thu,20 Mar 2025 15: 37: 47 GMT", "content-type": "application/x-amz-json-1.0", "content-length": "882", "connection": "keep-alive", "x-amzn-requestid": "P4SM36B6QM6J4P2JD12VGA3JEJVV4KQNSO5AEMVJF66Q9ASUAAJG", "x-amz-crc32": "3657798327"
+        },
+        "RetryAttempts": 0
+    }
+}

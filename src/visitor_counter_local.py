@@ -22,7 +22,7 @@ def Get_Visitor_Count(table):
     # The Scan operation returns one or more items and item attributes by accessing every item in a table or a secondary index.
     # You can also use the you can provide a FilterExpression operation to limit results.
     response = client.scan(TableName=table)
-
+    
     # See example_response in /examples dir
     if "Items" in response:
         count = response["Items"][0]["visitor_count"]["N"]
@@ -69,4 +69,4 @@ def Get_Visitor_Count(table):
     }
 
 
-#print(Get_Visitor_Count(TABLE_NAME))
+print(Get_Visitor_Count(TABLE_NAME))

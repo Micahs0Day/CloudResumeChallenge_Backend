@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 ACCESS_KEY = os.getenv("ACCESS_KEY")
 SECRET_KEY = os.getenv("SECRET_KEY")
-TABLE_NAME = os.getenv("TABLE_NAME")
+TABLE_NAME = "test_string_schema_table"  # os.getenv("TABLE_NAME")
 
 # Create dynamodb table
 client = boto3.client("dynamodb", region_name='us-east-1', aws_access_key_id=ACCESS_KEY, aws_secret_access_key=SECRET_KEY)
@@ -17,12 +17,11 @@ def lambda_handler(event, context):
     return Get_Visitor_Count()
 
 # Get current count from table, increment count by one, then output the updated count return the updated count JSON for Javascript to read.
-def Get_Visitor_Count(table_name_input):
+def Get_Visitor_Count(TABLE_NAME):
 
-    # The Scan operation returns one or more items and item attributes by accessing every item in a table or a secondary index.
-    # You can also use the you can provide a FilterExpression operation to limit results.
+    # Try/Except/Else for Error Handling
     try:
-        response = client.scan(TableName=table_name_input)
+        response = client.scan(TableName=TABLE_NAME)
         # See example_response in /examples dir
         if "Items" in response:
             count = response["Items"][0]["visitor_count"]["N"]
@@ -30,9 +29,11 @@ def Get_Visitor_Count(table_name_input):
             count = int(count)
             # Increment count by 1
             count += 1
-    # Error handling for being passed an empty table (sets count to 0, then later creates a new item in the table (update_item()))
-    except IndexError:
+
+    # Error handling for being passed an empty table or non-existent key (sets count to 0, then later creates a new item in the table (update_item()))
+    except (IndexError, KeyError):
         count = 0
+
     # Error handling for being passed a non-existent table (creates a new table with the name of the passed non-existent table)
     except client.exceptions.ResourceNotFoundException:
         client.create_table(
@@ -52,18 +53,38 @@ def Get_Visitor_Count(table_name_input):
                 'ReadCapacityUnits': 5,
                 'WriteCapacityUnits': 5,
             },
-            TableName=table_name_input,
+            TableName=TABLE_NAME,
         )
         count = 0
-    # An attribute is a data element that describes a particular item in a table!
-    # update_item() = Edits an existing item’s attributes, or adds a new item to the table if it does not already exist.
+
+    # Error handling for providing a key element that does not match the schema (ValidationException)
+    def get_key_schema():
+        # Describe table and get partition key & pk type
+        describe_response = client.describe_table(TableName=TABLE_NAME)
+        pk_name = describe_response["Table"]["AttributeDefinitions"][0]["AttributeName"]
+        pk_type = describe_response["Table"]["AttributeDefinitions"][0]["AttributeType"]
+
+        # Primary key determines pk value
+        if pk_type == 'B':
+            pk_value = 'MQ=='
+            key = {
+                f'{pk_name}': {
+                    f'{pk_type}': f'{pk_value}',
+                }
+            }
+        elif pk_type == 'S' or pk_type == 'N':
+            pk_value = '1'
+            key = {
+                f'{pk_name}': {
+                    f'{pk_type}': f'{pk_value}',
+                }
+            }
+
+        return key
+
     client.update_item(
         # Unique identifier of the record.
-        Key={
-            "visitor_count_id": {
-                "N": "1",
-            },
-        },
+        Key=get_key_schema(),
         # Substitution token for attribute name.
         ExpressionAttributeNames={
             "#VC": "visitor_count",
@@ -79,7 +100,7 @@ def Get_Visitor_Count(table_name_input):
         },
         # ALL_NEW = Returns all of the attributes of the item, as they appear after the UpdateItem operation.
         ReturnValues="ALL_NEW",
-        TableName=table_name_input,
+        TableName=TABLE_NAME,
         # An expression that defines one or more attributes to be updated, the action to be performed on them, and new values for them.
         # SET - Adds one or more attributes and values to an item. If any of these attributes already exist, they are replaced by the new values.
         UpdateExpression="SET #VC = :count",
@@ -93,4 +114,5 @@ def Get_Visitor_Count(table_name_input):
 
 # Used to execute this script only if the file is ran directly, and not at import.
 if __name__ == "__main__":
-    Get_Visitor_Count()
+    Get_Visitor_Count(TABLE_NAME)
+
