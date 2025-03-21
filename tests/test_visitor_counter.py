@@ -2,8 +2,9 @@ import boto3
 from moto import mock_aws
 import sys, os
 
-#sys.path.append('/workspaces/M0D_Content/CloudResumeChallenge_Backend/src/')
+# Set path for src import
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 os.environ['AWS_ACCESS_KEY_ID'] = 'testing'
 os.environ['AWS_SECRET_ACCESS_KEY'] = 'testing'
 os.environ['AWS_SECURITY_TOKEN'] = 'testing'

@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 ACCESS_KEY = os.getenv("ACCESS_KEY")
 SECRET_KEY = os.getenv("SECRET_KEY")
-TABLE_NAME = "test_string_schema_table"  # os.getenv("TABLE_NAME")
+TABLE_NAME = os.getenv("TABLE_NAME")
 
 # Create dynamodb table
 client = boto3.client("dynamodb", region_name='us-east-1', aws_access_key_id=ACCESS_KEY, aws_secret_access_key=SECRET_KEY)
