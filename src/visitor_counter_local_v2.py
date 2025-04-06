@@ -2,6 +2,7 @@ import os
 import json
 import boto3
 from dotenv import load_dotenv
+import time
 
 # Environment vairables for auth to AWS
 load_dotenv()
@@ -56,6 +57,7 @@ def Get_Visitor_Count(TABLE_NAME):
             TableName=TABLE_NAME,
         )
         count = 0
+        time.sleep(15)
 
     # Error handling for providing a key element that does not match the schema (ValidationException)
     def get_key_schema():
